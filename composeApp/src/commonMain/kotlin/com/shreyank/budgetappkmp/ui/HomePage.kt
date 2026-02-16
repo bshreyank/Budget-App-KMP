@@ -1,14 +1,12 @@
 package com.shreyank.budgetappkmp.ui
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -21,13 +19,16 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -40,7 +41,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.shreyank.budgetappkmp.ui.components.ActionRow
+import com.shreyank.budgetappkmp.ui.components.AddTransactionSheet
 import com.shreyank.budgetappkmp.ui.components.BalanceCard
 import com.shreyank.budgetappkmp.ui.components.TabButton
 import com.shreyank.budgetappkmp.ui.components.TransactionItem
@@ -50,17 +51,22 @@ import com.shreyank.budgetappkmp.ui.theme.SurfaceDark
 import com.shreyank.budgetappkmp.ui.theme.TextSecondary
 import com.shreyank.budgetappkmp.ui.theme.TextWhite
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomePage(viewModel: HomeViewModel) {
     val state by viewModel.uiState.collectAsState()
-    var selectedTab by remember { mutableStateOf(0) }   // 0: Transactions, 1: Insights
+    var selectedTab by remember { mutableStateOf(0) } // 0: Transactions, 1: Insights
+
+    // Bottom Sheet State
+    var showBottomSheet by remember { mutableStateOf(false) }
+    val sheetState = rememberModalBottomSheetState()
 
     Scaffold(
         containerColor = PrimaryDark,
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    /* TODO: Navigate to Add Transaction */
+                    showBottomSheet = true
                 },
                 containerColor = AccentPurple,
                 contentColor = TextWhite
@@ -216,6 +222,19 @@ fun HomePage(viewModel: HomeViewModel) {
                         )
                     }
                 }
+            }
+        }
+
+        // Bottom Sheet Logic
+        if (showBottomSheet) {
+            ModalBottomSheet(
+                onDismissRequest = { showBottomSheet = false },
+                sheetState = sheetState,
+                containerColor = SurfaceDark
+            ) {
+                AddTransactionSheet(
+                    onClose = { showBottomSheet = false }
+                )
             }
         }
     }
