@@ -1,36 +1,40 @@
 package com.shreyank.budgetappkmp.ui
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Fastfood
-import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material.icons.filled.Subscriptions
 import androidx.lifecycle.ViewModel
-import com.shreyank.budgetappkmp.ui.components.Transaction
-import com.shreyank.budgetappkmp.ui.components.TransactionType
-import kotlinx.coroutines.flow.MutableStateFlow
+import androidx.lifecycle.viewModelScope
+import com.shreyank.budgetappkmp.data.TransactionRepository
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
-class HomeViewModel : ViewModel() {
-    private val _uiState = MutableStateFlow(HomeUiState())
-    val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
+class HomeViewModel(private val repository: TransactionRepository) : ViewModel() {
 
-    init {
-        // Simulate loading data
-        loadData()
-    }
-
-    private fun loadData() {
-        _uiState.value = HomeUiState(
-            balance = "$12,450.00",
-            income = "$4,200",
-            expense = "$1,850",
-            userName = "Shreyank",
-            recentTransactions = listOf(
-                Transaction("1", "Netflix Subscription", "Today, 10:00 AM", "$15.00", TransactionType.EXPENSE, Icons.Default.Subscriptions),
-                Transaction("2", "Grocery Shopping", "Yesterday, 6:30 PM", "$120.50", TransactionType.EXPENSE, Icons.Default.ShoppingCart),
-                Transaction("3", "Salary Credited", "Oct 28, 9:00 AM", "$3,500.00", TransactionType.INCOME, Icons.Default.Fastfood) // Using placeholder icon
+    val uiState: StateFlow<HomeUiState> = repository.transactions
+        .map { transactions ->
+            HomeUiState(
+                recentTransactions = transactions,
+                balance = calculateBalance(transactions), // Implement this calculation logic
+                income = calculateIncome(transactions),
+                expense = calculateExpense(transactions)
             )
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = HomeUiState()
         )
+
+    fun saveTransaction(amount: String, category: String, description: String, isExpense: Boolean) {
+        viewModelScope.launch {
+            val amountDouble = amount.toDoubleOrNull() ?: 0.0
+            repository.saveTransaction(amountDouble, category, description, isExpense)
+        }
     }
+
+    // Helper functions for totals would go here
+    private fun calculateBalance(list: List<com.shreyank.budgetappkmp.ui.components.Transaction>): String = "$0.00"
+    private fun calculateIncome(list: List<com.shreyank.budgetappkmp.ui.components.Transaction>): String = "$0.00"
+    private fun calculateExpense(list: List<com.shreyank.budgetappkmp.ui.components.Transaction>): String = "$0.00"
 }

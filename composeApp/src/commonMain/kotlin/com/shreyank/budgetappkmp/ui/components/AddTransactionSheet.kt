@@ -48,6 +48,7 @@ import com.shreyank.budgetappkmp.ui.theme.TextWhite
 @Composable
 fun AddTransactionSheet(
     modifier: Modifier = Modifier,
+    onSave: (amount: String, category: String, desc: String, isExpense: Boolean) -> Unit,
     onClose: () -> Unit = {} // Callback to close sheet if needed from inside
 ) {
     var selectedTab by remember { mutableStateOf(0) } // 0: Expense, 1: Income
@@ -209,7 +210,10 @@ fun AddTransactionSheet(
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
-            onClick = onClose,
+            onClick = {
+                onSave(amount, selectedCategory ?: "Other", description, selectedTab == 0)
+                onClose()
+            },
             modifier = Modifier.fillMaxWidth().height(50.dp),
             colors = ButtonDefaults.buttonColors(containerColor = AccentPurple),
             shape = RoundedCornerShape(12.dp)

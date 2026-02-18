@@ -233,6 +233,17 @@ fun HomePage(viewModel: HomeViewModel) {
                 containerColor = SurfaceDark
             ) {
                 AddTransactionSheet(
+                    onSave = {
+                        amount,
+                        category,
+                        desc,
+                        isExpense -> viewModel.saveTransaction(
+                            amount,
+                            category,
+                        desc,
+                            isExpense
+                        )
+                    },
                     onClose = { showBottomSheet = false }
                 )
             }
