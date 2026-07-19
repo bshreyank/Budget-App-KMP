@@ -12,6 +12,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
+        NotificationServiceProvider.service = AndroidNotificationService(applicationContext)
+
         setContent {
             App()
         }
