@@ -11,7 +11,10 @@ data class NotificationData(
     val text: String,
     val postTime: Long,
     val formattedTime: String
-)
+) {
+    val transactionInfo: TransactionInfo?
+        get() = TransactionParser.parse(title, text)
+}
 
 interface NotificationService {
     val notifications: StateFlow<List<NotificationData>>

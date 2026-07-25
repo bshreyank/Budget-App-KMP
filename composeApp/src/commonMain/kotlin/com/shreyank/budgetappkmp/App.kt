@@ -310,23 +310,46 @@ fun NotificationCard(notification: NotificationData) {
             HorizontalDivider(color = Color(0xFF334155), thickness = 1.dp)
             Spacer(modifier = Modifier.height(12.dp))
 
-            // Card Body: Sender & Message Text
-            if (notification.title.isNotEmpty()) {
+            val txn = notification.transactionInfo
+            if (txn != null) {
+                val summaryText = txn.getFormattedSummary(notification.title.ifEmpty { notification.appName })
+                val textColor = if (txn.type == TransactionType.CREDITED) Color(0xFF34D399) else Color(0xFFFCA5A5)
+                val icon = if (txn.type == TransactionType.CREDITED) "💰 " else "💸 "
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(vertical = 4.dp)
+                ) {
+                    Text(
+                        text = icon,
+                        fontSize = 18.sp
+                    )
+                    Text(
+                        text = summaryText,
+                        color = textColor,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp
+                    )
+                }
+            } else {
+                // Card Body: Fallback for standard non-transaction notifications
+                if (notification.title.isNotEmpty()) {
+                    Text(
+                        text = notification.title,
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp,
+                        modifier = Modifier.padding(bottom = 6.dp)
+                    )
+                }
+
                 Text(
-                    text = notification.title,
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp,
-                    modifier = Modifier.padding(bottom = 6.dp)
+                    text = notification.text,
+                    color = Color(0xFFE2E8F0),
+                    fontSize = 14.sp,
+                    lineHeight = 20.sp
                 )
             }
-
-            Text(
-                text = notification.text,
-                color = Color(0xFFE2E8F0),
-                fontSize = 14.sp,
-                lineHeight = 20.sp
-            )
         }
     }
 }
