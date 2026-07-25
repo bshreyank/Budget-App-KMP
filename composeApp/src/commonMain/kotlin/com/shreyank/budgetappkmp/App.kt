@@ -28,6 +28,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
+import kotlin.math.abs
 
 @Composable
 fun App() {
@@ -109,13 +110,13 @@ fun NotificationDashboard(
         ) {
             Column {
                 Text(
-                    text = "Notification Hub",
+                    text = "SnapBudget",
                     color = Color.White,
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = "Locally captured messages",
+                    text = "Capture spends and credits",
                     color = Color(0xFF94A3B8),
                     fontSize = 14.sp
                 )
@@ -149,6 +150,33 @@ fun NotificationDashboard(
                 }
             }
         }
+
+        // Current Balance Card
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(150.dp)
+                .border(1.dp, Color(0xFF334155), RoundedCornerShape(16.dp)),
+            colors = CardDefaults.cardColors(
+                containerColor = Color(0xFF1E293B)
+            ),
+            shape = RoundedCornerShape(16.dp)
+        ) {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ){
+                Text(
+                    text = "1000 ₹",
+                    color = Color(0xFF60A5FA),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 54.sp
+                )
+            }
+        }
+
+        Spacer(Modifier.height(22.dp))
 
         // Search Bar
         OutlinedTextField(
@@ -499,7 +527,7 @@ fun getAppColor(appName: String): Color {
         Color(0xFFC084FC), // Pastel Purple
         Color(0xFFF472B6)  // Pastel Pink
     )
-    val index = kotlin.math.abs(hash) % colors.size
+    val index = abs(hash) % colors.size
     return colors[index]
 }
 
@@ -513,4 +541,4 @@ fun getAppInitials(appName: String): String {
         return (first + second).uppercase()
     }
     return cleanName.take(2).uppercase()
-}
+}
