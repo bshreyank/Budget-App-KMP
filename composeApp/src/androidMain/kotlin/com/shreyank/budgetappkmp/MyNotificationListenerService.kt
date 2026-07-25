@@ -20,22 +20,31 @@ class MyNotificationListenerService : NotificationListenerService() {
             val text = extras.getCharSequence(Notification.EXTRA_TEXT)?.toString() ?: ""
             val bigText = extras.getCharSequence(Notification.EXTRA_BIG_TEXT)?.toString() ?: ""
             
-            val fullText = if (bigText.length > text.length) bigText else text
-            val appName = getAppName(packageName)
-            val timeFormat = SimpleDateFormat("h:mm a", Locale.getDefault())
-            val formattedTime = timeFormat.format(Date(it.postTime))
-
-            val notificationData = NotificationData(
-                id = it.key,
-                packageName = packageName,
-                appName = appName,
-                title = title,
-                text = fullText,
-                postTime = it.postTime,
-                formattedTime = formattedTime
-            )
+            val isTransaction = title.contains("debited", ignoreCase = true) ||
+                                title.contains("credited", ignoreCase = true) ||
+                                text.contains("debited", ignoreCase = true) ||
+                                text.contains("credited", ignoreCase = true) ||
+                                bigText.contains("debited", ignoreCase = true) ||
+                                bigText.contains("credited", ignoreCase = true)
             
-            addNotification(notificationData)
+            if (isTransaction) {
+                val fullText = if (bigText.length > text.length) bigText else text
+                val appName = getAppName(packageName)
+                val timeFormat = SimpleDateFormat("h:mm a", Locale.getDefault())
+                val formattedTime = timeFormat.format(Date(it.postTime))
+
+                val notificationData = NotificationData(
+                    id = it.key,
+                    packageName = packageName,
+                    appName = appName,
+                    title = title,
+                    text = fullText,
+                    postTime = it.postTime,
+                    formattedTime = formattedTime
+                )
+                
+                addNotification(notificationData)
+            }
         }
     }
 
@@ -47,11 +56,21 @@ class MyNotificationListenerService : NotificationListenerService() {
         super.onListenerConnected()
         try {
             val activeList = activeNotifications ?: return
-            val list = activeList.map { sbn ->
+            val list = activeList.mapNotNull { sbn ->
                 val extras = sbn.notification.extras
                 val title = extras.getString(Notification.EXTRA_TITLE) ?: ""
                 val text = extras.getCharSequence(Notification.EXTRA_TEXT)?.toString() ?: ""
                 val bigText = extras.getCharSequence(Notification.EXTRA_BIG_TEXT)?.toString() ?: ""
+                
+                val isTransaction = title.contains("debited", ignoreCase = true) ||
+                                    title.contains("credited", ignoreCase = true) ||
+                                    text.contains("debited", ignoreCase = true) ||
+                                    text.contains("credited", ignoreCase = true) ||
+                                    bigText.contains("debited", ignoreCase = true) ||
+                                    bigText.contains("credited", ignoreCase = true)
+
+                if (!isTransaction) return@mapNotNull null
+
                 val fullText = if (bigText.length > text.length) bigText else text
                 val appName = getAppName(sbn.packageName)
                 val timeFormat = SimpleDateFormat("h:mm a", Locale.getDefault())
