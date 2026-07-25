@@ -22,10 +22,10 @@ import com.shreyank.budgetappkmp.data.parser.TransactionType
 import kotlin.math.abs
 
 @Composable
-fun NotificationCard(notification: NotificationData) {
-    val appColor = remember(notification.appName) { getAppColor(notification.appName) }
-    val initials = remember(notification.appName) { getAppInitials(notification.appName) }
-
+fun NotificationCard(
+    notification: NotificationData,
+    showSource: Boolean = true
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -38,80 +38,104 @@ fun NotificationCard(notification: NotificationData) {
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
-            // Card Top: App Details & Time
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                // Circle App Badge
-                Box(
-                    modifier = Modifier
-                        .size(36.dp)
-                        .background(appColor.copy(alpha = 0.2f), CircleShape)
-                        .border(1.dp, appColor, CircleShape),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = initials,
-                        color = appColor,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 14.sp
-                    )
-                }
-                Spacer(modifier = Modifier.width(12.dp))
-                
-                Column(
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text(
-                        text = notification.appName,
-                        color = Color.White,
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 14.sp,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                    Text(
-                        text = notification.packageName,
-                        color = Color(0xFF64748B),
-                        fontSize = 11.sp,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }
-                
-                Text(
-                    text = notification.formattedTime,
-                    color = Color(0xFF94A3B8),
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Medium
-                )
-            }
+            if (showSource) {
+                val appColor = remember(notification.appName) { getAppColor(notification.appName) }
+                val initials = remember(notification.appName) { getAppInitials(notification.appName) }
 
-            Spacer(modifier = Modifier.height(12.dp))
-            HorizontalDivider(color = Color(0xFF334155), thickness = 1.dp)
-            Spacer(modifier = Modifier.height(12.dp))
+                // Card Top: App Details & Time
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // Circle App Badge
+                    Box(
+                        modifier = Modifier
+                            .size(36.dp)
+                            .background(appColor.copy(alpha = 0.2f), CircleShape)
+                            .border(1.dp, appColor, CircleShape),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = initials,
+                            color = appColor,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 14.sp
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(12.dp))
+                    
+                    Column(
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(
+                            text = notification.appName,
+                            color = Color.White,
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 14.sp,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        Text(
+                            text = notification.packageName,
+                            color = Color(0xFF64748B),
+                            fontSize = 11.sp,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                    
+                    Text(
+                        text = notification.formattedTime,
+                        color = Color(0xFF94A3B8),
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+                HorizontalDivider(color = Color(0xFF334155), thickness = 1.dp)
+                Spacer(modifier = Modifier.height(12.dp))
+            }
 
             val txn = notification.transactionInfo
             if (txn != null) {
-                val summaryText = txn.getFormattedSummary(notification.title.ifEmpty { notification.appName })
+                val summaryText = if (showSource) {
+                    txn.getFormattedSummary(notification.title.ifEmpty { notification.appName })
+                } else {
+                    val action = if (txn.type == TransactionType.DEBITED) "Debited" else "Credited"
+                    "$action : ₹${txn.amount}"
+                }
                 val textColor = if (txn.type == TransactionType.CREDITED) Color(0xFF34D399) else Color(0xFFFCA5A5)
                 val icon = if (txn.type == TransactionType.CREDITED) "💰 " else "💸 "
 
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(vertical = 4.dp)
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp)
                 ) {
-                    Text(
-                        text = icon,
-                        fontSize = 18.sp
-                    )
-                    Text(
-                        text = summaryText,
-                        color = textColor,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 18.sp
-                    )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = icon,
+                            fontSize = 18.sp
+                        )
+                        Text(
+                            text = summaryText,
+                            color = textColor,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 18.sp
+                        )
+                    }
+
+                    if (!showSource) {
+                        Text(
+                            text = notification.formattedTime,
+                            color = Color(0xFF94A3B8),
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
                 }
             } else {
                 // Card Body: Fallback for standard non-transaction notifications
