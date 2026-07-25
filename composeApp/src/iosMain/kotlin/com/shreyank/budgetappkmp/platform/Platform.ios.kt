@@ -1,4 +1,4 @@
-package com.shreyank.budgetappkmp
+package com.shreyank.budgetappkmp.platform
 
 import platform.UIKit.UIDevice
 

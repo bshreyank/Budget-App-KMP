@@ -1,4 +1,4 @@
-package com.shreyank.budgetappkmp
+package com.shreyank.budgetappkmp.platform
 
 class JVMPlatform: Platform {
     override val name: String = "Java ${System.getProperty("java.version")}"

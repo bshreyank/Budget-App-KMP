@@ -1,4 +1,4 @@
-package com.shreyank.budgetappkmp
+package com.shreyank.budgetappkmp.data.parser
 
 enum class TransactionType {
     DEBITED, CREDITED
@@ -8,6 +8,9 @@ data class TransactionInfo(
     val amount: String,
     val type: TransactionType
 ) {
+    val amountValue: Double
+        get() = amount.replace(",", "").toDoubleOrNull() ?: 0.0
+
     fun getFormattedSummary(bankOrTitle: String): String {
         val bankName = extractBankName(bankOrTitle)
         val action = if (type == TransactionType.DEBITED) "Debited" else "Credited"

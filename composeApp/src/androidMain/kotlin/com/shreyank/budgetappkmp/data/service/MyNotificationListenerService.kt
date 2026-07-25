@@ -1,8 +1,9 @@
-package com.shreyank.budgetappkmp
+package com.shreyank.budgetappkmp.data.service
 
 import android.app.Notification
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
+import com.shreyank.budgetappkmp.data.model.NotificationData
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale

@@ -1,20 +1,8 @@
-package com.shreyank.budgetappkmp
+package com.shreyank.budgetappkmp.data.service
 
+import com.shreyank.budgetappkmp.data.model.NotificationData
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-
-data class NotificationData(
-    val id: String,
-    val packageName: String,
-    val appName: String,
-    val title: String,
-    val text: String,
-    val postTime: Long,
-    val formattedTime: String
-) {
-    val transactionInfo: TransactionInfo?
-        get() = TransactionParser.parse(title, text)
-}
 
 interface NotificationService {
     val notifications: StateFlow<List<NotificationData>>

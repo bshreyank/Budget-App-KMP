@@ -1,9 +1,10 @@
-package com.shreyank.budgetappkmp
+package com.shreyank.budgetappkmp.data.service
 
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.provider.Settings
+import com.shreyank.budgetappkmp.data.model.NotificationData
 import kotlinx.coroutines.flow.StateFlow
 
 class AndroidNotificationService(private val context: Context) : NotificationService {

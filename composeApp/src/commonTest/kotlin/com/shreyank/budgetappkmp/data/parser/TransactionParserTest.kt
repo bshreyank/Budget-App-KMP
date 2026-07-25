@@ -1,4 +1,4 @@
-package com.shreyank.budgetappkmp
+package com.shreyank.budgetappkmp.data.parser
 
 import kotlin.test.Test
 import kotlin.test.assertEquals

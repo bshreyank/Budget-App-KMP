@@ -1,0 +1,2 @@
+- [x] Modify `Screen.kt` to use a getter for `entries`
+- [x] Verify build
